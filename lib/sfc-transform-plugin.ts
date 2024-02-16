@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable complexity */
 /* eslint-env node */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { relative, dirname, join } from 'node:path'
@@ -33,29 +35,6 @@ export interface Section {
   attributes?: SectionAttributes
 }
 
-/**
- * Type alias to denote a glob pattern
- */
-export type GlobPattern = string
-
-function matches(filename: string, patterns: GlobPattern[]) {
-  return patterns.some(pattern => minimatch(filename, pattern))
-}
-
-// eslint-disable-next-line complexity
-function sectionToString({ name, code, attributes }: Section) {
-  console.log('sectionToString(name =', name, '; code.length =', code?.length, '; attributes =', attributes)
-
-  if (!code || !attributes) return ''
-
-  const attrs = Object.entries(attributes).map(([attr, value]) => value !== undefined ? `${attr}="${value}"` : attr)
-  const attrsStr = attrs.length > 0 ? ` ${attrs.join(' ')}` : ''
-  const sectionName = name === 'scriptSetup' ? 'script' : name
-  const result = `<${sectionName}${attrsStr}>${code}</${sectionName}>`
-
-  return result
-}
-
 type CollectableSection = 'template' | 'script' | 'scriptSetup'
 
 function collectSingleSection(type: CollectableSection, descriptor: SFCDescriptor, sections: Section[]) {
@@ -86,6 +65,26 @@ function collectCustomSections(descriptor: SFCDescriptor, sections: Section[]) {
       attributes: block.attrs,
     })
   })
+}
+
+/**
+ * Type alias to denote a glob pattern
+ */
+export type GlobPattern = string
+
+function matches(filename: string, patterns: GlobPattern[]) {
+  return patterns.some(pattern => minimatch(filename, pattern))
+}
+
+function sectionToString({ name, code, attributes }: Section) {
+  if (!code || !attributes) return ''
+
+  const attrs = Object.entries(attributes).map(([attr, value]) => value !== undefined ? `${attr}="${value}"` : attr)
+  const attrsStr = attrs.length > 0 ? ` ${attrs.join(' ')}` : ''
+  const sectionName = name === 'scriptSetup' ? 'script' : name
+  const result = `<${sectionName}${attrsStr}>${code}</${sectionName}>`
+
+  return result
 }
 
 export type TransformerFn = (filename: string, blocks: Section[]) => Section[]
@@ -119,7 +118,6 @@ export interface SfcTransformPluginOptions {
 
 const noop: TransformerFn = (filename: string, section: Section[]) => section
 
-// eslint-disable-next-line no-empty-pattern, max-lines-per-function
 export function plugin({
   transformer = noop,
   includes = ['src/**/*.vue'],
@@ -134,7 +132,6 @@ export function plugin({
     configResolved(resolvedConfig: ResolvedConfig) {
       config = resolvedConfig
     },
-    // eslint-disable-next-line complexity, max-lines-per-function
     transform(code, id) {
       if (!config) return code
 
