@@ -1,0 +1,68 @@
+{
+  "name": "@padcom/vite-plugin-vue-sfc-transform",
+  "version": "0.0.1",
+  "description": "Vite plugin to transform Vue.js SFC files",
+  "author": "Matthias Hryniszak <padcom@gmail.com>",
+  "keywords": [],
+  "license": "MIT",
+  "main": "./dist/vite-plugin-vue-sfc-transform.umd.cjs",
+  "module": "./dist/vite-plugin-vue-sfc-transform.js",
+  "types": "./dist/types.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/vite-plugin-vue-sfc-transform.umd.cjs",
+      "import": "./dist/vite-plugin-vue-sfc-transform.js",
+      "types": "./dist/types.d.ts"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "vite",
+    "test": "npm run clean && vitest run --root . --coverage",
+    "test:watch": "npm run clean && vitest watch --root . --coverage",
+    "lint": "eslint './{components,lib}/**/*.{ts,vue}'",
+    "dev": "vite build -w",
+    "build": "vite build",
+    "clean": "rimraf dist coverage",
+    "prepublishOnly": "npm run clean && npm install && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0",
+    "@vue/compiler-sfc": "^3.0.0"
+  },
+  "devDependencies": {
+    "@padcom/eslint-config-typescript": "^0.6.0",
+    "@types/node": "^20.11.19",
+    "@vitest/coverage-v8": "^1.2.2",
+    "eslint": "^8.44.0",
+    "rimraf": "^5.0.5",
+    "typescript": ">= 3.3.0 < 5.1.0",
+    "vite-plugin-dts": "^3.7.2",
+    "vite-plugin-eslint": "^1.8.1",
+    "vitest": "^1.2.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@padcom/eslint-config-typescript"
+    ]
+  },
+  "homepage": "https://github.com/padcom/vite-plugin-vue-sfc-transform#readme",
+  "bugs": {
+    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform.git"
+  },
+  "dependencies": {
+    "@padcom/vue-ast-serializer": "^0.0.1",
+    "@vue/compiler-core": "^3.4.19",
+    "@vue/compiler-sfc": "^3.4.19",
+    "htmlparser": "^1.7.7",
+    "minimatch": "^9.0.3"
+  }
+}
