@@ -72,7 +72,7 @@ function collectCustomSections(descriptor: SFCDescriptor, sections: Section[]) {
  */
 export type GlobPattern = string
 
-function matches(filename: string, patterns: GlobPattern[]) {
+export function matches(filename: string, patterns: GlobPattern[]) {
   return patterns.some(pattern => minimatch(filename, pattern))
 }
 
@@ -87,7 +87,7 @@ function sectionToString({ name, code, attributes }: Section) {
   return result
 }
 
-export type TransformerFn = (filename: string, blocks: Section[]) => Section[]
+export type TransformerFn = (filename: string, blocks: Section[], root?: string) => Section[]
 
 /**
  * SFC Transform plugin options
@@ -136,6 +136,7 @@ export function plugin({
       if (!config) return code
 
       const filename = relative(config.root, id)
+
       if (matches(filename, includes) && !matches(filename, excludes)) {
         parseCache.clear()
         const parsed = parse(code, { filename })
@@ -148,7 +149,7 @@ export function plugin({
           collectSingleSection('scriptSetup', parsed.descriptor, sections)
           collectStyleSections(parsed.descriptor, sections)
           collectCustomSections(parsed.descriptor, sections)
-          const transformed = transformer(filename, sections)
+          const transformed = transformer(filename, sections, config.root)
           const result = transformed.map(section => sectionToString(section)).filter(x => x).join('\n\n')
 
           // eslint-disable-next-line max-depth
@@ -186,10 +187,10 @@ export function findSectionsOfType(type: string, sections: Section[]): Section[]
 /**
  * Create a setup script section
  */
-export function createScriptSetupSection(): Section {
+export function createScriptSetupSection(code = ''): Section {
   return {
     name: 'scriptSetup',
     attributes: { setup: true },
-    code: '',
+    code,
   }
 }
