@@ -1,6 +1,6 @@
 {
   "name": "@padcom/vite-plugin-vue-sfc-transform",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vite plugin to transform Vue.js SFC files",
   "author": "Matthias Hryniszak <padcom@gmail.com>",
   "keywords": [],
