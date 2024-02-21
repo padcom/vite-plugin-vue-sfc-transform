@@ -1,6 +1,5 @@
 /* eslint-disable max-lines-per-function */
 import { describe, it, expect } from 'vitest'
-import ts from 'typescript'
 
 import {
   type Import,
@@ -12,8 +11,10 @@ import {
   hasNamedTypeImportFromModule,
 } from './ts-import-extractor'
 
+import { parse as parseTS } from './ts-utils'
+
 function parse(code: string) {
-  return ts.createSourceFile('example.ts', code, { languageVersion: ts.ScriptTarget.Latest })
+  return parseTS('example.ts', code)
 }
 
 function process(code: string) {

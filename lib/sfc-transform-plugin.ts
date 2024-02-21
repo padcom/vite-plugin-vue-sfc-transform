@@ -3,96 +3,22 @@
 /* eslint-env node */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { relative, dirname, join } from 'node:path'
-import { minimatch } from 'minimatch'
 import { type Plugin, type ResolvedConfig } from 'vite'
-import { SFCDescriptor, parse, parseCache } from '@vue/compiler-sfc'
-import ts from 'typescript'
+import { parse } from './vue-utils'
+import { matches, type GlobPattern } from './path-utils'
+import { type Section } from './section'
+import {
+  collectTemplateSection,
+  collectScriptSection,
+  collectScriptSetupSection,
+  collectCustomSections,
+  collectStyleSections,
+} from './section-parser'
+import {
+  serializeSection,
+} from './section-serializer'
 
-/**
- * Type alias to denote a block of code
- */
-export type Code = string
-
-/**
- * List of attributes of a section
- */
-export type SectionAttributes = Record<string, string | true>
-
-/**
- * Type descring section of the SFC
- */
-export interface Section {
-  /**
-   * Tag name of the section
-   */
-  name: string
-  /**
-   * Content (code) of the section
-   */
-  code?: Code
-  /**
-   * Section attributes
-   */
-  attributes?: SectionAttributes
-}
-
-export interface ScriptSetupSection extends Section {
-  parsed: ts.SourceFile
-}
-
-type CollectableSection = 'template' | 'script' | 'scriptSetup'
-
-function collectSingleSection(type: CollectableSection, descriptor: SFCDescriptor, sections: Section[]) {
-  if (descriptor[type]) {
-    sections.push({
-      name: type,
-      code: descriptor[type]?.content,
-      attributes: descriptor[type]?.attrs,
-    })
-  }
-}
-
-function collectStyleSections(descriptor: SFCDescriptor, sections: Section[]) {
-  descriptor.styles.forEach(style => {
-    sections.push({
-      name: 'style',
-      code: style.content,
-      attributes: style.attrs,
-    })
-  })
-}
-
-function collectCustomSections(descriptor: SFCDescriptor, sections: Section[]) {
-  descriptor.customBlocks.forEach(block => {
-    sections.push({
-      name: block.type,
-      code: block.content,
-      attributes: block.attrs,
-    })
-  })
-}
-
-/**
- * Type alias to denote a glob pattern
- */
-export type GlobPattern = string
-
-export function matches(filename: string, patterns: GlobPattern[]) {
-  return patterns.some(pattern => minimatch(filename, pattern))
-}
-
-function sectionToString({ name, code, attributes }: Section) {
-  if (!code || !attributes) return ''
-
-  const attrs = Object.entries(attributes).map(([attr, value]) => value !== undefined ? `${attr}="${value}"` : attr)
-  const attrsStr = attrs.length > 0 ? ` ${attrs.join(' ')}` : ''
-  const sectionName = name === 'scriptSetup' ? 'script' : name
-  const result = `<${sectionName}${attrsStr}>${code}</${sectionName}>`
-
-  return result
-}
-
-export type TransformerFn = (filename: string, blocks: Section[], root?: string) => Section[]
+export type TransformerFn = (filename: string, blocks: Section[], root: string) => Section[]
 
 /**
  * SFC Transform plugin options
@@ -143,19 +69,17 @@ export function plugin({
       const filename = relative(config.root, id)
 
       if (matches(filename, includes) && !matches(filename, excludes)) {
-        parseCache.clear()
-        const parsed = parse(code, { filename })
-        parseCache.clear()
+        const parsed = parse(filename, code)
 
         if (parsed.errors.length === 0) {
-          const sections: Section[] = []
-          collectSingleSection('template', parsed.descriptor, sections)
-          collectSingleSection('script', parsed.descriptor, sections)
-          collectSingleSection('scriptSetup', parsed.descriptor, sections)
+          const sections = [] as Section[]
+          collectTemplateSection(parsed.descriptor, sections)
+          collectScriptSection(filename, parsed.descriptor, sections)
+          collectScriptSetupSection(filename, parsed.descriptor, sections)
           collectStyleSections(parsed.descriptor, sections)
           collectCustomSections(parsed.descriptor, sections)
           const transformed = transformer(filename, sections, config.root)
-          const result = transformed.map(section => sectionToString(section)).filter(x => x).join('\n\n')
+          const result = transformed.map(section => serializeSection(section)).filter(x => x).join('\n\n')
 
           // eslint-disable-next-line max-depth
           if (debug && debugPath) {
@@ -172,30 +96,5 @@ export function plugin({
         return code
       }
     },
-  }
-}
-
-/**
- * Find all sections of the given type
- */
-export function findSectionOfType(type: string, sections: Section[]): Section | null {
-  return sections.find(section => section.name === type) || null
-}
-
-/**
- * Find section of the given type
- */
-export function findSectionsOfType(type: string, sections: Section[]): Section[] {
-  return sections.filter(section => section.name === type)
-}
-
-/**
- * Create a setup script section
- */
-export function createScriptSetupSection(code = ''): Section {
-  return {
-    name: 'scriptSetup',
-    attributes: { setup: true },
-    code,
   }
 }

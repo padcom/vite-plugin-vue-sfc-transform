@@ -22,8 +22,16 @@ export default defineConfig({
     },
     sourcemap: true,
     rollupOptions: {
-      external: ['node:fs', 'node:path', 'minimatch', '@vue/compiler-sfc', 'vite'],
-
+      external: [
+        'node:fs',
+        'node:path',
+        'minimatch',
+        '@vue/compiler-sfc',
+        'vite',
+        'typescript',
+        'node-html-parser',
+        'get-tsconfig',
+      ],
     },
   },
   test: {
