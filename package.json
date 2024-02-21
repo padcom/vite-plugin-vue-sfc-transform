@@ -5,6 +5,14 @@
   "author": "Matthias Hryniszak <padcom@gmail.com>",
   "keywords": [],
   "license": "MIT",
+  "homepage": "https://github.com/padcom/vite-plugin-vue-sfc-transform#readme",
+  "bugs": {
+    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform.git"
+  },
   "main": "./dist/vite-plugin-vue-sfc-transform.umd.cjs",
   "module": "./dist/vite-plugin-vue-sfc-transform.js",
   "types": "./dist/types.d.ts",
@@ -34,6 +42,14 @@
     "vite": "^5.0.0",
     "@vue/compiler-sfc": "^3.0.0"
   },
+  "dependencies": {
+    "@padcom/vue-ast-serializer": "^0.0.1",
+    "@vue/compiler-core": "^3.4.19",
+    "@vue/compiler-sfc": "^3.4.19",
+    "htmlparser": "^1.7.7",
+    "minimatch": "^9.0.3",
+    "typescript": ">= 3.3.0 < 5.1.0"
+  },
   "devDependencies": {
     "@padcom/eslint-config-typescript": "^0.6.0",
     "@types/node": "^20.11.19",
@@ -47,22 +63,9 @@
   "eslintConfig": {
     "extends": [
       "@padcom/eslint-config-typescript"
-    ]
-  },
-  "homepage": "https://github.com/padcom/vite-plugin-vue-sfc-transform#readme",
-  "bugs": {
-    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/padcom/vite-plugin-vue-sfc-transform.git"
-  },
-  "dependencies": {
-    "@padcom/vue-ast-serializer": "^0.0.1",
-    "@vue/compiler-core": "^3.4.19",
-    "@vue/compiler-sfc": "^3.4.19",
-    "htmlparser": "^1.7.7",
-    "minimatch": "^9.0.3",
-    "typescript": ">= 3.3.0 < 5.1.0"
+    ],
+    "rules": {
+      "padding-line-between-statements": 0
+    }
   }
 }
