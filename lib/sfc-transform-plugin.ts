@@ -6,6 +6,7 @@ import { relative, dirname, join } from 'node:path'
 import { minimatch } from 'minimatch'
 import { type Plugin, type ResolvedConfig } from 'vite'
 import { SFCDescriptor, parse, parseCache } from '@vue/compiler-sfc'
+import ts from 'typescript'
 
 /**
  * Type alias to denote a block of code
@@ -33,6 +34,10 @@ export interface Section {
    * Section attributes
    */
   attributes?: SectionAttributes
+}
+
+export interface ScriptSetupSection extends Section {
+  parsed: ts.SourceFile
 }
 
 type CollectableSection = 'template' | 'script' | 'scriptSetup'
