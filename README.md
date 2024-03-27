@@ -39,7 +39,7 @@ function transformer(filename: string, sections: Section[]): Section[] {
 export default defineConfig({
   plugins: [
     transform({
-      transformer: transformerFn,
+      transformer: transformer,
     }),
     vue(),
   ],
