@@ -2,7 +2,7 @@
 
 There are cases where to implement something in your code you would have to go through every single file in your project and do something to it. Some of those modifications are trivial and will stay there forever. Some are different and will change over time.
 
-For those cases in other platforms, like Java or .NET, there is a concept of aspect-oriented programming (AOP). The idea behind it is that during compilation you get to transform the original source to either add, remove or change some of it to implement some cross-cutting concern in your system.
+For those cases in other platforms, like Java or .NET, there is a concept of [aspect-oriented programming (AOP)](https://en.wikipedia.org/wiki/Aspect-oriented_programming). The idea behind it is that during compilation you get to transform the original source to either add, remove or change some of it to implement some cross-cutting concern in your system.
 
 The best example here is the case of feature flags.
 
